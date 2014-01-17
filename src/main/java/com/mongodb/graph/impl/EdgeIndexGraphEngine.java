@@ -256,7 +256,8 @@ public class EdgeIndexGraphEngine implements GraphEngine
 
 	private Direction getAllowedDirection(
 			EdgeFilter filter, Direction defaultDirection) {
-		return filter == null ? defaultDirection : filter.getAllowedDirection();
+		return (filter == null || filter.getAllowedDirection() == null) ? 
+				defaultDirection : filter.getAllowedDirection();
 	}
 		
 	private boolean idMatch(DBObject original, DBObject subject) {
