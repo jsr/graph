@@ -20,6 +20,7 @@ import com.mongodb.graph.test.utils.WorksForEdge;
 
 public class GraphTestBase {
 	protected static final String BASE_URI = "mongodb://localhost/";
+    protected static final String ID_KEY = "_id";
     
     protected DB database;
     protected GraphEngine engine;

@@ -1,6 +1,7 @@
 package com.mongodb.graph;
 
 import static org.junit.Assert.*;
+import static com.mongodb.graph.test.utils.FilteredDBObject.withoutId;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,7 +17,7 @@ import java.util.Date;
 @RunWith(Parameterized.class)
 public class NeighborTest extends GraphTestBase{
 
-    public NeighborTest(String testName, Class<? extends GraphEngine> impl) 
+	public NeighborTest(String testName, Class<? extends GraphEngine> impl) 
             throws Exception {
     	
     	startEngine(testName, NeighborTest.class.getSimpleName(), impl);
@@ -37,17 +38,17 @@ public class NeighborTest extends GraphTestBase{
     	
 		Collection<DBObject> result = engine.getEdges(bob.graphId());
 		assertEquals(3, result.size());
-		assertTrue(result.contains(bob_acme));
-		assertTrue(result.contains(bob_ford));
-		assertTrue(result.contains(alice_bob));
+		assertTrue(result.contains(withoutId(bob_acme)));
+		assertTrue(result.contains(withoutId(bob_ford)));
+		assertTrue(result.contains(withoutId(alice_bob)));
     	
 		result = engine.getEdges(sam.graphId());
 		assertEquals(1, result.size());
-		assertTrue(result.contains(sam_ford));
+		assertTrue(result.contains(withoutId(sam_ford)));
     	
 		result = engine.getEdges(alice.graphId());
 		assertEquals(1, result.size());
-		assertTrue(result.contains(alice_bob));
+		assertTrue(result.contains(withoutId(alice_bob)));
    }
 
     @Test
@@ -56,23 +57,23 @@ public class NeighborTest extends GraphTestBase{
 		Collection<DBObject> result = engine.getEdges(
 				bob.graphId(), new EdgeFilter(Direction.BOTH));
 		assertEquals(3, result.size());
-		assertTrue(result.contains(bob_acme));
-		assertTrue(result.contains(bob_ford));
-		assertTrue(result.contains(alice_bob));
+		assertTrue(result.contains(withoutId(bob_acme)));
+		assertTrue(result.contains(withoutId(bob_ford)));
+		assertTrue(result.contains(withoutId(alice_bob)));
     	
 		result = engine.getEdges(
 				bob.graphId(), new EdgeFilter(Direction.OUT));
 		assertEquals(2, result.size());
-		assertTrue(result.contains(bob_acme));
-		assertTrue(result.contains(bob_ford));
-		assertFalse(result.contains(alice_bob));
+		assertTrue(result.contains(withoutId(bob_acme)));
+		assertTrue(result.contains(withoutId(bob_ford)));
+		assertFalse(result.contains(withoutId(alice_bob)));
     	
 		result = engine.getEdges(
 				bob.graphId(), new EdgeFilter(Direction.IN));
 		assertEquals(1, result.size());
-		assertFalse(result.contains(bob_acme));
-		assertFalse(result.contains(bob_ford));
-		assertTrue(result.contains(alice_bob));
+		assertFalse(result.contains(withoutId(bob_acme)));
+		assertFalse(result.contains(withoutId(bob_ford)));
+		assertTrue(result.contains(withoutId(alice_bob)));
    }
 
     @Test
@@ -84,15 +85,35 @@ public class NeighborTest extends GraphTestBase{
     	Collection<DBObject> result = engine.getEdges(
 				bob.graphId(), new EdgeFilter(Direction.BOTH, query, null));
 		assertEquals(1, result.size());
-		assertTrue(result.contains(bob_acme));
+		assertTrue(result.contains(withoutId(bob_acme)));
     	
     	result = engine.getEdges(
 				bob.graphId(), new EdgeFilter(Direction.OUT, query, null));
 		assertEquals(1, result.size());
-		assertTrue(result.contains(bob_acme));
+		assertTrue(result.contains(withoutId(bob_acme)));
     	
     	result = engine.getEdges(
 				bob.graphId(), new EdgeFilter(Direction.IN, query, null));
 		assertEquals(0, result.size());
+   }
+
+    @Test
+    public void testGetEdgesIdFilter() throws Exception { 	
+		
+    	BasicDBObject query = new BasicDBObject("start_date", 
+    			new BasicDBObject("$lt", new Date(250)));
+    	
+    	Collection<DBObject> result = engine.getEdges(
+				bob.graphId(), new EdgeFilter(Direction.BOTH, query, null));
+		assertEquals(1, result.size());
+		assertTrue(result.contains(withoutId(bob_acme)));
+		
+		EdgeFilter idFilter = new EdgeFilter(Direction.BOTH, query, null);
+		idFilter.setIncludeEdgeIds(true);
+		
+		result = engine.getEdges(bob.graphId(), idFilter);
+		assertEquals(1, result.size());
+		assertTrue(result.contains(bob_acme));
+    	
    }
 }

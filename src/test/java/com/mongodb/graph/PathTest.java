@@ -1,6 +1,8 @@
 package com.mongodb.graph;
 
 import static org.junit.Assert.*;
+import static com.mongodb.graph.test.utils.FilteredDBObject.*;
+
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -52,13 +54,13 @@ public class PathTest extends GraphTestBase{
 		// alice->father->bob
 		result = engine.findPaths(alice.graphId(), bob.graphId(), null, 10, null);
 		List<Relationship> correctPath = new ArrayList<Relationship>();
-		correctPath.add(new Relationship(bob.graphId(), alice_bob, Direction.OUT));		
+		correctPath.add(new Relationship(bob.graphId(), withoutId(alice_bob), Direction.OUT));		
 		assertEquals(1, result.size());
 		assertTrue(result.contains(correctPath));
     	
 		// alice->father->bob->workedat->ford
 		result = engine.findPaths(alice.graphId(), ford.graphId(), null, 10, null);
-		correctPath.add(new Relationship(ford.graphId(), bob_ford, Direction.OUT));		
+		correctPath.add(new Relationship(ford.graphId(), withoutId(bob_ford), Direction.OUT));		
 		assertEquals(1, result.size());
 		assertTrue(result.contains(correctPath));
    }
@@ -74,7 +76,7 @@ public class PathTest extends GraphTestBase{
 		assertEquals(0, result.size());
     	    	
 		List<Relationship> correctPath = new ArrayList<Relationship>();
-		correctPath.add(new Relationship(bob.graphId(), alice_bob, Direction.OUT));		
+		correctPath.add(new Relationship(bob.graphId(), withoutId(alice_bob), Direction.OUT));		
 		
 		// alice->father->bob
 		result = engine.findPaths(alice.graphId(), bob.graphId(), bothFilter, 10, null);
@@ -83,13 +85,13 @@ public class PathTest extends GraphTestBase{
     	
 		// alice->father->bob->workedat->ford
 		result = engine.findPaths(alice.graphId(), ford.graphId(), bothFilter, 10, null);
-		correctPath.add(new Relationship(ford.graphId(), bob_ford, Direction.OUT));		
+		correctPath.add(new Relationship(ford.graphId(), withoutId(bob_ford), Direction.OUT));		
 		assertEquals(1, result.size());
 		assertTrue(result.contains(correctPath));
 		
 		// alice->father->bob->workedat->ford<-workedat<-sam
 		result = engine.findPaths(alice.graphId(), sam.graphId(), bothFilter, 3, null);
-		correctPath.add(new Relationship(sam.graphId(), sam_ford, Direction.IN));		
+		correctPath.add(new Relationship(sam.graphId(), withoutId(sam_ford), Direction.IN));		
 		assertEquals(1, result.size());
 		assertTrue(result.contains(correctPath));		
    }
@@ -116,8 +118,8 @@ public class PathTest extends GraphTestBase{
 		EdgeFilter findFilter = new EdgeFilter(Direction.BOTH, findquery, null);
 		
 		List<Relationship> correctPath = new ArrayList<Relationship>();
-		correctPath.add(new Relationship(bob.graphId(), alice_bob, Direction.OUT));		
-		correctPath.add(new Relationship(ford.graphId(), bob_ford, Direction.OUT));		
+		correctPath.add(new Relationship(bob.graphId(), withoutId(alice_bob), Direction.OUT));		
+		correctPath.add(new Relationship(ford.graphId(), withoutId(bob_ford), Direction.OUT));		
 		
 		// alice->father->bob->workedat->ford
 		result = engine.findPaths(alice.graphId(), ford.graphId(), findFilter, 10, null);

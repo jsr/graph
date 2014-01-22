@@ -18,7 +18,8 @@ public class EdgeIndexGraphEngine implements GraphEngine
 	private static final int DEFAULT_RESULT_LIMIT = 1000;
 	private static final String DEFAULT_EDGE_COLLECTION = "graph_edges";
 	private static final String SOURCE_KEY = "_s";
-	private static final String DEST_KEY = "_d";	
+	private static final String DEST_KEY = "_d";
+	private static final String ID_KEY = "_id";	
 		
 	private DB _db = null;
 	private DBCollection _edgeColl = null;
@@ -244,12 +245,17 @@ public class EdgeIndexGraphEngine implements GraphEngine
 	
 	private BasicDBObject buildProjection(EdgeFilter filter) {
 
-		BasicDBObject projection = null;	
-		if(filter != null && filter.hasProjection()){
-			projection = new BasicDBObject(SOURCE_KEY, true).append(DEST_KEY, true);
-			projection.putAll(filter.getProjection());
-		}
-		
+		BasicDBObject projection = new BasicDBObject(ID_KEY, false);	
+		if(filter != null){
+			if(filter.getIncludeEdgeIds() == true)
+				projection.remove(ID_KEY);
+				
+			if(filter.hasProjection()){
+				projection.append(SOURCE_KEY, true).append(DEST_KEY, true);
+				projection.putAll(filter.getProjection());
+			}
+		}		
+
 		return projection;
 	}
 

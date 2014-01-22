@@ -13,6 +13,7 @@ public class EdgeFilter {
 	private final Direction _allowedDirection;
 	private final DBObject _query;
 	private final DBObject _projection;
+	private boolean _includeIds = false;
 
 	
 	/**
@@ -62,6 +63,25 @@ public class EdgeFilter {
 
 	public boolean hasProjection() {
 		return _projection != null;
+	}
+
+	/**
+	 * Returns true if this filter allows edge IDs to be included in query results.
+	 * Edge IDs are not always required and there is a performance cost to including
+	 * them. By default this value is set to false.
+	 * @return true if edge IDs are included
+	 */
+	public boolean getIncludeEdgeIds() {
+		return _includeIds ;
+	}
+
+	/**
+	 * Sets whether this filter allows edge IDs to be included in query results.
+	 * Edge IDs are not always required and there is a performance cost to including
+	 * them. By default this value is set to false.
+	 */
+	public void setIncludeEdgeIds(boolean includeIds) {
+		this._includeIds = includeIds ;
 	}
 
 }
